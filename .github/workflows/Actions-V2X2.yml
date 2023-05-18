@@ -46,7 +46,6 @@ jobs:
           sudo mkdir -p /workspace
 
       - name: Clone Source Code
-        working-directory: /workspace
         id: clone
         run: |
           df -hT $PWD
