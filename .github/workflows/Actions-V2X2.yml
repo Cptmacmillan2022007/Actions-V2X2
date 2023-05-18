@@ -43,9 +43,5 @@ jobs:
         df -hT $PWD
         git clone $SOURCE_URL -b $SOURCE_BRANCH v2x2
         ln -sf /workdir/v2x2 $GITHUB_WORKSPACE/v2x2
+        ls -alF $GITHUB_WORKSPACE/v2x2
         
-    - name: Load custom files
-      run: |
-        [ -e $DIY_SH ] && mv $DIY_SH v2x2/core/core.go
-        chmod +x $DIY_SH
-        $GITHUB_WORKSPACE/$DIY_SH
