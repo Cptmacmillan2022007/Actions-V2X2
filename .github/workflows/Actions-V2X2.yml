@@ -20,11 +20,11 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
+    
+    outputs:
+      V2X2_ROOT_PATH: ${{ steps.clone.outputs.V2X2_ROOT_PATH }}
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@main
-    
     - name: Initialization environment
       env:
         DEBIAN_FRONTEND: noninteractive
@@ -34,12 +34,17 @@ jobs:
         sudo -E apt-get -qq install curl wget tar zip unzip gcc git
         sudo -E apt-get -qq autoremove --purge
         sudo -E apt-get -qq clean
-        sudo mkdir -p /workdir
-        sudo chown $USER:$GROUPS /workdir
+        docker image prune -a -f
+        mkdir -p workdir
+
+    - name: Checkout
+      uses: actions/checkout@main
 
     - name: Clone source code
-      working-directory: /workdir
+      id: clone
       run: |
         df -hT $PWD
-        git clone $SOURCE_URL -b $SOURCE_BRANCH v2x2
-        ln -sf /workdir/v2x2 $GITHUB_WORKSPACE/v2x2
+        git clone $SOURCE_URL -b $SOURCE_BRANCH workdir/v2x2
+        cd workdir/v2x2
+        echo "V2X2_ROOT_PATH=$PWD" >> $GITHUB_ENV
+        echo "::set-output name=V2X2_ROOT_PATH::$(echo $PWD)"
