@@ -13,7 +13,6 @@ on:
 
 env:
   SOURCE_URL: https://github.com/XTLS/Xray-core.git
-  DIY_SH: custom.sh
   UPLOAD_RELEASE: true
   GO_VER: 1.20
 
