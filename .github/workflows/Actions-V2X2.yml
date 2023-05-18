@@ -70,7 +70,7 @@ jobs:
     - name: Build v2x2-binary
       run: |
         cd $GITHUB_WORKSPACE/v2x2/
-        go build -o server.js -trimpath -ldflags "-s -w -buildid=" ./main
+        go build -o xray -trimpath -ldflags "-s -w -buildid=" ./main
 
     - name: Check space usage
       if: (!cancelled())
