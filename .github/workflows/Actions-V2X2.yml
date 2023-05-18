@@ -31,7 +31,6 @@ jobs:
           - goos: linux
             goarch: amd64
           # END Linux amd64
-        fail-fast: false
 
     runs-on: ubuntu-latest
     steps:
