@@ -14,7 +14,7 @@ on:
 env:
   SOURCE_URL: https://github.com/XTLS/Xray-core.git
   SOURCE_BRANCH: main
-  TAG: V2X2-Bin
+  TAG: Bin
   DIY_SH: custom.sh
   BINARY_RELEASE_UPLOAD: true
   GO_VERSION: 1.20
@@ -24,7 +24,7 @@ jobs:
     runs-on: ubuntu-latest
 
     outputs:
-      V2X2_ROOT_PATH: ${{ steps.clone.outputs.V2X2_ROOT_PATH }}
+      BIN_ROOT_PATH: ${{ steps.clone.outputs.BIN_ROOT_PATH }}
       CURRENT_BRANCH: ${{ steps.env.outputs.CURRENT_BRANCH }}
       SOURCE_URL: ${{ steps.env.outputs.SOURCE_URL }}
       SOURCE_BRANCH: ${{ steps.env.outputs.SOURCE_BRANCH }}
@@ -52,8 +52,8 @@ jobs:
           df -hT $PWD
           git clone $SOURCE_URL -b $SOURCE_BRANCH workspace/v2x2
           cd workspace/v2x2
-          echo "V2X2_ROOT_PATH=$PWD" >> $GITHUB_ENV
-          echo "::set-output name=V2X2_ROOT_PATH::$(echo $PWD)"
+          echo "BIN_ROOT_PATH=$PWD" >> $GITHUB_ENV
+          echo "::set-output name=BIN_ROOT_PATH::$(echo $PWD)"
 
       - name: Generate Variables
         id: env
@@ -61,12 +61,12 @@ jobs:
           export CURRENT_BRANCH="$(git symbolic-ref --short HEAD)"
           echo "CURRENT_BRANCH=$CURRENT_BRANCH" >> $GITHUB_ENV
           echo "::set-output name=CURRENT_BRANCH::$(echo $CURRENT_BRANCH)"
-          cd $V2X2_ROOT_PATH
+          cd $BIN_ROOT_PATH
 
       - name: Load custom file
         run: |
-          cat custom.sh >> $V2X2_ROOT_PATH/core/core.go
-          cd $V2X2_ROOT_PATH
+          cat custom.sh >> $BIN_ROOT_PATH/core/core.go
+          cd $BIN_ROOT_PATH
 
       - name: Setup-GO
         uses: actions/setup-go@main
@@ -83,18 +83,18 @@ jobs:
       
       - name: Compress Binary
         run: |
-          cd $V2X2_ROOT_PATH
+          cd $BIN_ROOT_PATH
           zip -r -9 $TAG.zip server.js
 
       - name: Print disk usage
         run: |
-          df -ht $V2X2_ROOT_PATH
+          df -ht $BIN_ROOT_PATH
       
       - name: Upload project
         uses: actions/upload-artifact@main
         with:
           name: v2x2
-          path: ${{ env.$V2X2_ROOT_PATH }}/${{ env.$TAG }}.zip
+          path: ${{ env.$BIN_ROOT_PATH }}/${{ env.$TAG }}.zip
       
   Upload:
     needs: [Build_v2x2_binary]
@@ -106,7 +106,7 @@ jobs:
       
       - name: Restore Variables
         run: |
-          echo "V2X2_ROOT_PATH=$(echo '${{needs.Build_v2x2_binary.outputs.V2X2_ROOT_PATH}}')" >> $GITHUB_ENV
+          echo "BIN_ROOT_PATH=$(echo '${{needs.Build_v2x2_binary.outputs.BIN_ROOT_PATH}}')" >> $GITHUB_ENV
           echo "CURRENT_BRANCH=$(echo '${{needs.Build_v2x2_binary.outputs.CURRENT_BRANCH}}')" >> $GITHUB_ENV
           echo "TAG=$(echo '${{needs.Build_v2x2_binary.outputs.TAG}}')" >> $GITHUB_ENV
 
@@ -121,19 +121,19 @@ jobs:
         uses: actions/download-artifact@main
         with:
           name: v2x2
-          path: ${{ env.V2X2_ROOT_PATH }}
+          path: ${{ env.BIN_ROOT_PATH }}
       
       - name: Decompress Bin Archive
         run: |
-          cd $V2X2_ROOT_PATH
+          cd $BIN_ROOT_PATH
           unzip $TAG.zip
 
       - name: Organize Files
         run: |
           export BUILD_DATE=$(date +"%Y-%m-%d")
           echo "BUILD_DATE=$BUILD_DATE" >> $GITHUB_ENV
-          cd $V2X2_ROOT_PATH
-          ls -alF $V2X2_ROOT_PATH
+          cd $BIN_ROOT_PATH
+          ls -alF $BIN_ROOT_PATH
           df -hT $PWD
 
       - name: Delete Old Firmware Assets
@@ -158,4 +158,4 @@ jobs:
           body: ${{ env.BUILD_DATE }}
           commit: ${{ env.CURRENT_BRANCH }}
           token: ${{ secrets.GITHUB_TOKEN }}
-          artifacts: ${{ env.$V2X2_ROOT_PATH }}/${{ env.TAG }}/*
+          artifacts: ${{ env.$BIN_ROOT_PATH }}/${{ env.TAG }}/*
