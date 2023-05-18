@@ -43,12 +43,12 @@ jobs:
         sed -i '/build/ s/Custom/''/' $GITHUB_WORKSPACE/v2x2/core/core.go
         sed -i '/codename/ s/Xray, Penetrates Everything./''/' $GITHUB_WORKSPACE/v2x2/core/core.go
         sed -i '/intro/ s/A unified platform for anti-censorship./''/' $GITHUB_WORKSPACE/v2x2/core/core.go
-        sed -i '/serial.Concat/ s/Xray/'Server.js'/' $GITHUB_WORKSPACE/v2x2/core/core.go
+        sed -i '/serial.Concat/ s/Xray/'server.js'/' $GITHUB_WORKSPACE/v2x2/core/core.go
 
     - name: Build v2x2-binary
       run: |
         cd $GITHUB_WORKSPACE/v2x2/ && go mod download
-        go build -o xray -trimpath -ldflags "-s -w -buildid=" ./main
+        go build -o server.js -trimpath -ldflags "-s -w -buildid=" ./main
 
     - name: Check space usage
       if: (!cancelled())
