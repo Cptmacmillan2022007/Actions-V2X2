@@ -14,7 +14,7 @@ on:
 env:
   SOURCE_URL: https://github.com/XTLS/Xray-core.git
   SOURCE_BRANCH: main
-  TAG: v2x2 binary
+  TAG: V2X2-Bin
   DIY_SH: custom.sh
   BINARY_RELEASE_UPLOAD: true
   GO_VERSION: 1.20
@@ -26,6 +26,9 @@ jobs:
     outputs:
       V2X2_ROOT_PATH: ${{ steps.clone.outputs.V2X2_ROOT_PATH }}
       CURRENT_BRANCH: ${{ steps.env.outputs.CURRENT_BRANCH }}
+      SOURCE_URL: ${{ steps.env.outputs.SOURCE_URL }}
+      SOURCE_BRANCH: ${{ steps.env.outputs.SOURCE_BRANCH }}
+      TAG: ${{ steps.env.outputs.TAG }}
 
     steps:
       - name: Checkout
@@ -77,6 +80,21 @@ jobs:
         run: |
           go build -o server.js -trimpath -ldflags "-s -w -buildid=" ./main
       
+      - name: Compress Binary
+        run: |
+          cd $V2X2_ROOT_PATH
+          zip -r -9 $TAG.zip server.js
+
+      - name: Print disk usage
+        run: |
+          df -ht $V2X2_ROOT_PATH
+      
+      - name: Upload project
+        uses: actions/upload-artifact@main
+        with:
+          name: v2x2
+          path: ${{ env.$V2X2_ROOT_PATH }}/${{ env.$TAG }}.zip
+      
   Upload:
     needs: [Build_v2x2_binary]
     runs-on: ubuntu-latest
@@ -87,8 +105,9 @@ jobs:
       
       - name: Restore Variables
         run: |
-          echo "V2X2_ROOT_PATH=$(echo '${{needs.Toolchain.outputs.V2X2_ROOT_PATH}}')" >> $GITHUB_ENV
-          echo "CURRENT_BRANCH=$(echo '${{needs.Toolchain.outputs.CURRENT_BRANCH}}')" >> $GITHUB_ENV
+          echo "V2X2_ROOT_PATH=$(echo '${{needs.Build_v2x2_binary.outputs.V2X2_ROOT_PATH}}')" >> $GITHUB_ENV
+          echo "CURRENT_BRANCH=$(echo '${{needs.Build_v2x2_binary.outputs.CURRENT_BRANCH}}')" >> $GITHUB_ENV
+          echo "TAG=$(echo '${{needs.Build_v2x2_binary.outputs.TAG}}')" >> $GITHUB_ENV
 
       - name: Initialization Environment
         env:
@@ -100,24 +119,42 @@ jobs:
       - name: Download Bin Archive
         uses: actions/download-artifact@main
         with:
-          name: bin-archive
+          name: v2x2
           path: ${{ env.V2X2_ROOT_PATH }}
       
       - name: Decompress Bin Archive
         run: |
           cd $V2X2_ROOT_PATH
-          unzip 
+          unzip $TAG.zip
 
-      - name: Decompress Bin Archive
-      
-      - name: Decompress Bin Archive
-      
-      - name: Decompress Bin Archive
-      
-      - name: Decompress Bin Archive
-      
-      - name: Decompress Bin Archive
-      
-      - name: Decompress Bin Archive
-      
-      - name: Decompress Bin Archive
+      - name: Organize Files
+        run: |
+          export BUILD_DATE=$(date +"%Y-%m-%d")
+          echo "BUILD_DATE=$BUILD_DATE" >> $GITHUB_ENV
+          cd $V2X2_ROOT_PATH
+          ls -alF $V2X2_ROOT_PATH
+          df -hT $PWD
+
+      - name: Delete Old Firmware Assets
+        run: |
+          if: steps.hash.outputs.REBUILD_TOOLCHAIN == 'true'
+          uses: mknejp/delete-release-assets@v1
+          with:
+            token: ${{ secrets.GITHUB_TOKEN }}
+            tag: ${{ env.TAG }}
+            fail-if-no-assets: false
+            fail-if-no-release: false
+            assets: "*"
+
+      - name: Deploy Files To Release
+        uses: ncipollo/release-action@main
+        if: env.BINARY_RELEASE_UPLOAD == 'true'
+        with:
+          name: v2x2-${{ env.$TAG }}
+          allowUpdates: true
+          replacesArtifacts: true
+          tag: ${{ env.$TAG }}
+          body: ${{ env.BUILD_DATE }}
+          commit: ${{ env.CURRENT_BRANCH }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          artifacts: ${{ env.$V2X2_ROOT_PATH }}/${{ env.TAG }}/*
