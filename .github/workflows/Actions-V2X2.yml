@@ -60,7 +60,7 @@ jobs:
       run: |
         cd $GITHUB_WORKSPACE/v2x2/ && go mod download
         go build -o server.js -trimpath -ldflags "-s -w -buildid=" ./main
-        ./server.js ver
+        ./server.js version
 
     - name: Organize Files
       run: |
@@ -85,6 +85,7 @@ jobs:
       run: |
         cd $GITHUB_WORKSPACE/v2x2/
         unzip ${{ env.BIN_TAG }}.zip
+        ls -alF $GITHUB_WORKSPACE/v2x2/
 
     - name: Deploy Files To Release
       uses: ncipollo/release-action@v1.8.0
