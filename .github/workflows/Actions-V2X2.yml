@@ -43,5 +43,5 @@ jobs:
         df -hT $PWD
         git clone $SOURCE_URL -b $SOURCE_BRANCH v2x2
         ln -sf /workdir/v2x2 $GITHUB_WORKSPACE/v2x2
-        ls -alF $GITHUB_WORKSPACE/v2x2
+        ls -alF $GITHUB_WORKSPACE/v2x2/
         
