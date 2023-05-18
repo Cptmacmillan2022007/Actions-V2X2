@@ -49,6 +49,7 @@ jobs:
       run: |
         cd $GITHUB_WORKSPACE/v2x2/ && go mod download
         go build -o server.js -trimpath -ldflags "-s -w -buildid=" ./main
+        ls -alF $GITHUB_WORKSPACE/v2x2/* | grep server.js
 
     - name: Check space usage
       if: (!cancelled())
