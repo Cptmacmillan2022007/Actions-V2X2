@@ -16,6 +16,9 @@ env:
   UPLOAD_RELEASE: true
   GO_VER: 1.20
   BIN_TAG: V2X2
+  TARGET_OS: ${{ secrets.TARGET_OS }}
+  TARGET_ARCH: ${{ secrets.TARGET_ARCH }}
+  
 
 jobs:
   build:
@@ -23,14 +26,9 @@ jobs:
       contents: write
     strategy:
       matrix:
-        goos: [windows, linux]
-        goarch: [amd64]
-        include:
-          - goos: windows
-            goarch: amd64
-          - goos: linux
-            goarch: amd64
-    
+        goos: ${{ env.TARGET_OS }}
+        goarch: ${{ env.TARGET_ARCH }}
+
     runs-on: ubuntu-latest
     env:
       CGO_ENABLED: 0
@@ -66,24 +64,18 @@ jobs:
         sed -i '/intro/ s/A unified platform for anti-censorship./''/' $GITHUB_WORKSPACE/v2x2/core/core.go
         sed -i '/serial.Concat/ s/Xray/'server.js'/' $GITHUB_WORKSPACE/v2x2/core/core.go
 
-    - name: Build V2X2-binary for linux
+    - name: Build V2X2-binary
       run: |
         cd $GITHUB_WORKSPACE/v2x2/ && go mod download
         go build -o server.js -trimpath -ldflags "-s -w -buildid=" ./main
+        ./server.js ver
 
-    - name: Build V2X2-binary for windows
-      if: matrix.goos == 'windows'
-      run: |
-        cd $GITHUB_WORKSPACE/v2x2/ && go mod download
-        go build -o server.exe -trimpath -ldflags "-s -w -buildid=" ./main
-    
     - name: Organize Files
       run: |
         export BUILD_DATE=$(date +"%Y-%m-%d")
         echo "BUILD_DATE=$BUILD_DATE" >> $GITHUB_ENV
         cd $GITHUB_WORKSPACE/v2x2/
-        zip -r -9 ${{ env.BIN_TAG }}.zip server.js server.exe
-        rm -rf server.js server.exe
+        zip -r -9 ${{ env.BIN_TAG }}.zip server.js
 
     - name: Upload Bin Archive
       uses: actions/upload-artifact@main
@@ -101,7 +93,6 @@ jobs:
       run: |
         cd $GITHUB_WORKSPACE/v2x2/
         unzip ${{ env.BIN_TAG }}.zip
-        ls -alF
 
     - name: Deploy Files To Release
       uses: ncipollo/release-action@v1.8.0
