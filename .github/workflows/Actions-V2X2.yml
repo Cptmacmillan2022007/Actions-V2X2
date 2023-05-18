@@ -16,6 +16,7 @@ env:
   SOURCE_BRANCH: main
   DIY_SH: custom.sh
   UPLOAD_RELEASE: true
+  GO_VER: 1.20
 
 jobs:
   build:
@@ -46,6 +47,17 @@ jobs:
         sed -i '/codename/ s/Xray, Penetrates Everything./''/' $GITHUB_WORKSPACE/v2x2/core/core.go
         sed -i '/intro/ s/A unified platform for anti-censorship./''/' $GITHUB_WORKSPACE/v2x2/core/core.go
         sed -i '/serial.Concat/ s/Xray/'Server.js'/' $GITHUB_WORKSPACE/v2x2/core/core.go
+
+    - name: Setup GO
+      uses: actions/setup-go@main
+      with:
+        go-version: '${{ env.GO_VER }}'
+        check-latest: true
+
+    - name: Get project dependencies
+      run: |
+        go get -v -t -d $GITHUB_WORKSPACE/v2x2/go.mod
+        go mod download
 
     - name: Build v2x2-binary
       run: |
