@@ -56,7 +56,9 @@ jobs:
         check-latest: true
 
     - name: Get project dependencies
-      run: go mod download
+      run: |
+        cd $GITHUB_WORKSPACE/v2x2
+        go mod download
     
     - name: Build v2x2-binary
       run: |
