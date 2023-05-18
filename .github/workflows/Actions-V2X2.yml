@@ -69,6 +69,7 @@ jobs:
         ls -alF $GITHUB_WORKSPACE/v2x2/
         
     - name: Compress Bin Folder
+      run: |
         cd $GITHUB_WORKSPACE/v2x2/
         zip -r ${{ env.BIN_TAG }}.zip server.js
 
