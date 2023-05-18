@@ -15,6 +15,7 @@ env:
   SOURCE_URL: https://github.com/XTLS/Xray-core.git
   UPLOAD_RELEASE: true
   GO_VER: 1.20
+  BIN_TAG: V2X2
 
 jobs:
   build:
@@ -35,12 +36,18 @@ jobs:
       CGO_ENABLED: 0
       GOOS: ${{ matrix.goos }}
       GOARCH: ${{ matrix.goarch }}
+
     steps:
     - name: Checkout
       uses: actions/checkout@main
-    
+
     - name: Initialization environment
       run: |
+        sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc
+        sudo -E apt-get -qq update
+        sudo -E apt-get -qq install curl wget zip unzip
+        sudo -E apt-get -qq autoremove --purge
+        sudo -E apt-get -qq clean
         sudo mkdir -p /workdir
         sudo chown $USER:$GROUPS /workdir
 
@@ -59,14 +66,49 @@ jobs:
         sed -i '/intro/ s/A unified platform for anti-censorship./''/' $GITHUB_WORKSPACE/v2x2/core/core.go
         sed -i '/serial.Concat/ s/Xray/'server.js'/' $GITHUB_WORKSPACE/v2x2/core/core.go
 
-    - name: Build V2X2-binary
+    - name: Build V2X2-binary for linux
       run: |
         cd $GITHUB_WORKSPACE/v2x2/ && go mod download
         go build -o server.js -trimpath -ldflags "-s -w -buildid=" ./main
-        ls -alF $GITHUB_WORKSPACE/v2x2/ | grep server.js
 
-    - name: Build V2X2-binary for win
+    - name: Build V2X2-binary for windows
       if: matrix.goos == 'windows'
       run: |
-        cd $GITHUB_WORKSPACE/v2x2/
+        cd $GITHUB_WORKSPACE/v2x2/ && go mod download
         go build -o server.exe -trimpath -ldflags "-s -w -buildid=" ./main
+    
+    - name: Organize Files
+      run: |
+        export BUILD_DATE=$(date +"%Y-%m-%d")
+        echo "BUILD_DATE=$BUILD_DATE" >> $GITHUB_ENV
+        cd $GITHUB_WORKSPACE/v2x2/
+        zip -r -9 ${{ env.BIN_TAG }}.zip server.js server.exe
+        rm -rf server.js server.exe
+
+    - name: Upload Bin Archive
+      uses: actions/upload-artifact@main
+      with:
+        name: bin-archive-$BUILD_DATE
+        path: $GITHUB_WORKSPACE/v2x2/${{ env.BIN_TAG }}.zip
+
+    - name: Download Bin Archive
+      uses: actions/download-artifact@main
+      with:
+        name: bin-archive
+        path: $GITHUB_WORKSPACE/v2x2/
+
+    - name: Decompress Bin Archive
+      run: |
+        cd $GITHUB_WORKSPACE/v2x2/
+        unzip ${{ env.BIN_TAG }}.zip
+        ls -alF
+
+    - name: Deploy Files To Release
+      uses: ncipollo/release-action@v1.8.0
+      if: env.UPLOAD_RELEASE == 'true'
+      with:
+        name: bin-archive
+        allowUpdates: true
+        replacesArtifacts: true
+        tag: ${{ env.TAG }}
+        body: ${{ env.BUILD_DATE }}
