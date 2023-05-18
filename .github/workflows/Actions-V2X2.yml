@@ -21,18 +21,11 @@ env:
 
 jobs:
   build:
-    permissions:
-      contents: write
-    strategy:
-      matrix:
-        goos: ${{ secrets.TARGET_OS }}
-        goarch: ${{ secrets.TARGET_ARCH }}
-
     runs-on: ubuntu-latest
     env:
       CGO_ENABLED: 0
-      GOOS: ${{ matrix.goos }}
-      GOARCH: ${{ matrix.goarch }}
+      GOOS: ${{ secrets.TARGET_OS }}
+      GOARCH: ${{ secrets.TARGET_ARCH }}
 
     steps:
     - name: Checkout
