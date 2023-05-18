@@ -53,7 +53,7 @@ jobs:
 
     - name: Get project dependencies
       run: |
-        go get -v -t -d $GITHUB_WORKSPACE/v2x2/go.mod
+        go get -v -t -d $GITHUB_WORKSPACE/v2x2
         go mod download
 
     - name: Build v2x2-binary
