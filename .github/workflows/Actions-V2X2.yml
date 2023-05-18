@@ -14,7 +14,6 @@ on:
 env:
   SOURCE_URL: https://github.com/XTLS/Xray-core.git
   UPLOAD_RELEASE: true
-  GO_VER: 1.20
   BIN_TAG: V2X2
   TARGET_OS: ${{ secrets.TARGET_OS }}
   TARGET_ARCH: ${{ secrets.TARGET_ARCH }}
@@ -26,8 +25,8 @@ jobs:
       contents: write
     strategy:
       matrix:
-        goos: ${{ env.TARGET_OS }}
-        goarch: ${{ env.TARGET_ARCH }}
+        goos: ${{ secrets.TARGET_OS }}
+        goarch: ${{ secrets.TARGET_ARCH }}
 
     runs-on: ubuntu-latest
     env:
