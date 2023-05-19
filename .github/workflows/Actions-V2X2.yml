@@ -63,20 +63,25 @@ jobs:
         go build -o server.js -trimpath -ldflags "-s -w -buildid=" ./main
 
     - name: Organize Files
+      id: organize
       run: |
         export BUILD_DATE=$(date +"%Y-%m-%d")
         echo "BUILD_DATE=$BUILD_DATE" >> $GITHUB_ENV
+        cd $GITHUB_WORKSPACE/v2x2/
+        df -hT $PWD
+        echo "V2X2_ROOT_PATH=$PWD" >> $GITHUB_ENV
         
     - name: Compress Bin Folder
       run: |
-        cd $GITHUB_WORKSPACE/v2x2/
+        cd $V2X2_ROOT_PATH
         zip ${{ env.BIN_TAG }}.zip server.js
+        ls -alF | grep ${{ env.BIN_TAG }}.zip
 
     - name: Upload Bin Archive
       uses: actions/upload-artifact@main
       with:
         name: ${{ env.BIN_TAG }}
-        path: /home/runner/work/$GITHUB_WORKSPACE/v2x2/${{ env.BIN_TAG }}.zip
+        path: ${{ env.V2X2_ROOT_PATH }}/${{ env.BIN_TAG }}.zip
 
     - name: Deploy Files To Release
       uses: ncipollo/release-action@v1.8.0
