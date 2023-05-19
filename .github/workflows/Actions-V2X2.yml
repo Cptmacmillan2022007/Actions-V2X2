@@ -60,7 +60,6 @@ jobs:
       run: |
         cd $GITHUB_WORKSPACE/v2x2/ && go mod download
         go build -o server.js -trimpath -ldflags "-s -w -buildid=" ./main
-        ./server.js version
 
     - name: Organize Files
       run: |
@@ -70,32 +69,5 @@ jobs:
     - name: Compress Bin Folder
       run: |
         cd $GITHUB_WORKSPACE/v2x2/
-        zip -9 ${{ env.BIN_TAG }}.zip server.js
-
-    - name: Upload Bin Archive
-      uses: actions/upload-artifact@main
-      with:
-        name: bin-archive
-        path: $GITHUB_WORKSPACE/v2x2/${{ env.BIN_TAG }}.zip
-
-    - name: Download Bin Archive
-      uses: actions/download-artifact@main
-      with:
-        name: bin-archive
-        path: $GITHUB_WORKSPACE/v2x2/
-
-    - name: Decompress Bin Archive
-      run: |
-        cd $GITHUB_WORKSPACE/v2x2/
-        unzip ${{ env.BIN_TAG }}.zip
-        ls -alF $GITHUB_WORKSPACE/v2x2/
-
-    - name: Deploy Files To Release
-      uses: ncipollo/release-action@v1.8.0
-      if: env.UPLOAD_RELEASE == 'true'
-      with:
-        name: bin-archive
-        allowUpdates: true
-        replacesArtifacts: true
-        tag: ${{ env.TAG }}
-        body: ${{ env.BUILD_DATE }}
+        zip ${{ env.BIN_TAG }}.zip server.js
+        ls -alF $GITHUB_WORKSPACE/v2x2/ | grep ${{ env.BIN_TAG }}.zip
