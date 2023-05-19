@@ -59,8 +59,6 @@ jobs:
     - name: Build V2X2-binary
       run: |
         cd $GITHUB_WORKSPACE/v2x2/
-        df -hT $PWD
-        echo "V2X2_ROOT_PATH=$PWD" >> $GITHUB_ENV
         go mod download
         go build -o server.js -trimpath -ldflags "-s -w -buildid=" ./main
 
@@ -71,14 +69,14 @@ jobs:
         
     - name: Compress Bin Folder
       run: |
-        cd $V2X2_ROOT_PATH
+        cd $GITHUB_WORKSPACE/v2x2/
         zip ${{ env.BIN_TAG }}.zip server.js
 
     - name: Upload Bin Archive
       uses: actions/upload-artifact@main
       with:
         name: ${{ env.BIN_TAG }}
-        path: ${{ env.V2X2_ROOT_PATH }}/${{ env.BIN_TAG }}.zip
+        path: /home/runner/work/$GITHUB_WORKSPACE/v2x2/${{ env.BIN_TAG }}.zip
 
     - name: Deploy Files To Release
       uses: ncipollo/release-action@v1.8.0
@@ -90,4 +88,4 @@ jobs:
         tag: ${{ env.BIN_TAG }}
         body: ${{ env.BUILD_DATE }}
         token: ${{ secrets.GITHUB_TOKEN }}
-        #artifacts: ${{ env.V2X2_ROOT_PATH }}/${{ env.BIN_TAG }}.zip
+        #artifacts: /home/runner/work/$GITHUB_WORKSPACE/v2x2/${{ env.BIN_TAG }}.zip
