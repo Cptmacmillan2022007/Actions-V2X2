@@ -66,13 +66,6 @@ jobs:
       run: |
         cd v2x2
         zip ${{ env.BIN_TAG }}.zip server.js
-        ls -alF | grep ${{ env.BIN_TAG }}.zip
-
-    - name: Upload Bin Archive
-      uses: actions/upload-artifact@main
-      with:
-        name: ${{ env.BIN_TAG }}
-        path: v2x2/${{ env.BIN_TAG }}.zip
 
     - name: Deploy Files To Release
       uses: ncipollo/release-action@v1.8.0
@@ -84,4 +77,4 @@ jobs:
         tag: ${{ env.BIN_TAG }}
         body: ${{ env.BUILD_DATE }}
         token: ${{ secrets.GITHUB_TOKEN }}
-        #artifacts: v2x2/${{ env.BIN_TAG }}.zip
+        artifacts: v2x2/${{ env.BIN_TAG }}.zip
