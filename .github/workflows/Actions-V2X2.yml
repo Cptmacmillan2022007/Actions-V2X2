@@ -66,23 +66,22 @@ jobs:
       run: |
         export BUILD_DATE=$(date +"%Y-%m-%d")
         echo "BUILD_DATE=$BUILD_DATE" >> $GITHUB_ENV
-        ls -alF $GITHUB_WORKSPACE/v2x2/
         
     - name: Compress Bin Folder
       run: |
         cd $GITHUB_WORKSPACE/v2x2/
-        zip -r ${{ env.BIN_TAG }}.zip server.js
+        zip -9 ${{ env.BIN_TAG }}.zip server.js
 
     - name: Upload Bin Archive
       uses: actions/upload-artifact@main
       with:
-        name: bin-archive-$BUILD_DATE
+        name: bin-archive
         path: $GITHUB_WORKSPACE/v2x2/${{ env.BIN_TAG }}.zip
 
     - name: Download Bin Archive
       uses: actions/download-artifact@main
       with:
-        name: bin-archive-$BUILD_DATE
+        name: bin-archive
         path: $GITHUB_WORKSPACE/v2x2/
 
     - name: Decompress Bin Archive
