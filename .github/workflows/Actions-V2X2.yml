@@ -73,7 +73,7 @@ jobs:
       run: |
         cd $V2X2_ROOT_PATH
         zip ${{ env.BIN_TAG }}.zip server.js
-        ls -alF ${{ env.V2X2_ROOT_PATH }} | grep ${{ env.BIN_TAG }}.zip
+        ls -alF $V2X2_ROOT_PATH | grep ${{ env.BIN_TAG }}.zip
 
     - name: Upload Bin Archive
       uses: actions/upload-artifact@main
