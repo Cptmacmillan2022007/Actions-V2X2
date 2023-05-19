@@ -74,12 +74,19 @@ jobs:
 
     - name: Upload Bin Archive
       uses: actions/upload-artifact@main
+      if: steps.compile.outputs.status == 'success' && env.UPLOAD_BIN_DIR == 'true'
       with:
-        name: ${{ env.BIN_TAG }}
+        name: ${{ env.BIN_TAG }}-$BUILD_DATE
         path: $GITHUB_WORKSPACE/v2x2/${{ env.BIN_TAG }}.zip
 
-    - name: Download Bin Archive
-      uses: actions/download-artifact@main
+    - name: Deploy Files To Release
+      uses: ncipollo/release-action@v1.8.0
+      if: env.FIRMWARE_RELEASE_UPLOAD == 'true'
       with:
         name: ${{ env.BIN_TAG }}
-        path: $GITHUB_WORKSPACE/v2x2/
+        allowUpdates: true
+        replacesArtifacts: true
+        tag: ${{ env.BIN_TAG }}
+        body: ${{ env.BUILD_DATE }}
+        token: ${{ secrets.GITHUB_TOKEN }}
+        artifacts: $GITHUB_WORKSPACE/v2x2/${{ env.BIN_TAG }}.zip
