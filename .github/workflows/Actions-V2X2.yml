@@ -74,14 +74,13 @@ jobs:
 
     - name: Upload Bin Archive
       uses: actions/upload-artifact@main
-      if: steps.compile.outputs.status == 'success' && env.UPLOAD_BIN_DIR == 'true'
       with:
-        name: ${{ env.BIN_TAG }}-$BUILD_DATE
+        name: ${{ env.BIN_TAG }}.zip
         path: $GITHUB_WORKSPACE/v2x2/${{ env.BIN_TAG }}.zip
 
     - name: Deploy Files To Release
       uses: ncipollo/release-action@v1.8.0
-      if: env.FIRMWARE_RELEASE_UPLOAD == 'true'
+      if: env.UPLOAD_RELEASE == 'true'
       with:
         name: ${{ env.BIN_TAG }}
         allowUpdates: true
