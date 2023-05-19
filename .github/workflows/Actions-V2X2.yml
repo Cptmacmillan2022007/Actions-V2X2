@@ -70,13 +70,13 @@ jobs:
       run: |
         cd $GITHUB_WORKSPACE/v2x2/
         zip ${{ env.BIN_TAG }}.zip server.js
-        ls -alF $GITHUB_WORKSPACE/v2x2/ | grep ${{ env.BIN_TAG }}.zip
+        ls -alF /workdir/v2x2/ | grep ${{ env.BIN_TAG }}.zip
 
     - name: Upload Bin Archive
       uses: actions/upload-artifact@main
       with:
         name: ${{ env.BIN_TAG }}.zip
-        path: $GITHUB_WORKSPACE/v2x2/${{ env.BIN_TAG }}.zip
+        path: /workdir/v2x2/${{ env.BIN_TAG }}.zip
 
     - name: Deploy Files To Release
       uses: ncipollo/release-action@v1.8.0
