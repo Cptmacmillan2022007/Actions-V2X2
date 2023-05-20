@@ -1,0 +1,18 @@
+name: Delete-Action-V2X2
+
+on:
+  workflow_dispatch:
+
+  schedule:
+    - cron: '0 0 * * *'
+
+jobs:
+  Delete-Action-V2X2:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete-Action-V2X2
+        id: workflow
+        uses: Mattraks/delete-workflow-runs@main
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          retain_days: 7
