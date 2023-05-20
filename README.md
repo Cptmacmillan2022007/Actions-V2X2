@@ -4,7 +4,7 @@
 ## 1.fork本项目
 ## 2.自定义版本
 |**版本号**|
-|:---------------------------------------:|
+|:--------:|
 |修改Actions-V2X2.yml文件第54~57的''中的内容|
 ## 3.跨平台编译
 ### 在项目Settings>>Secrets and variables>>Actions>>Repository secrets里添加以下变量
