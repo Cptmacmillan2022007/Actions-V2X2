@@ -5,7 +5,7 @@
 ## 2.自定义版本
 |**版本号**|**名称**|
 |:---------------------------------------:|:------------------------------------------------------:|
-|修改Actions-V2X2.yml文件第54~57的''中的内容|修改Actions-V2X2.yml文件第63、68行的server.js为你想要的名称|
+|修改Actions-V2X2.yml文件第54~57的''中的内容|修改Actions-V2X2.yml文件第63、73行的server.js为你想要的名称|
 ## 3.跨平台编译
 ### 在项目Settings>>Secrets and variables>>Actions>>Repository secrets里添加以下变量
 |**`TARGET_ARCH`**|**`TARGET_OS`**|
