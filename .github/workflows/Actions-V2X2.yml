@@ -55,7 +55,7 @@ jobs:
         sed -i '/build/ s/Custom/''/' $GITHUB_WORKSPACE/v2x2/core/core.go
         sed -i '/codename/ s/Xray, Penetrates Everything./''/' $GITHUB_WORKSPACE/v2x2/core/core.go
         sed -i '/intro/ s/A unified platform for anti-censorship./''/' $GITHUB_WORKSPACE/v2x2/core/core.go
-        sed -i '/serial.Concat/ s/Xray/'server.js'/' $GITHUB_WORKSPACE/v2x2/core/core.go
+        sed -i '/serial.Concat/ s/Xray/'${{ secrets.BIN_NAME }}'/' $GITHUB_WORKSPACE/v2x2/core/core.go
 
     - name: Build V2X2-binary
       run: |
