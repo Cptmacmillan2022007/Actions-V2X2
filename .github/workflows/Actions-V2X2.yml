@@ -17,6 +17,7 @@ env:
   BIN_TAG: V2X2
   TARGET_OS: ${{ secrets.TARGET_OS }}
   TARGET_ARCH: ${{ secrets.TARGET_ARCH }}
+  BIN_NAME: ${{ secrets.BIN_NAME }}
   
 
 jobs:
@@ -60,7 +61,7 @@ jobs:
       run: |
         cd v2x2
         go mod download
-        go build -o server.js -trimpath -ldflags "-s -w -buildid=" ./main
+        go build -o ${{ secrets.BIN_NAME }} -trimpath -ldflags "-s -w -buildid=" ./main
 
     - name: Organize Files
       run: |
@@ -70,7 +71,7 @@ jobs:
     - name: Compress Bin Folder
       run: |
         cd v2x2
-        zip ${{ env.BIN_TAG }}.zip server.js
+        zip ${{ env.BIN_TAG }}.zip ${{ secrets.BIN_NAME }}
 
     - name: Deploy Files To Release
       uses: ncipollo/release-action@v1.8.0
