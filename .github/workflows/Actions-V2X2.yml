@@ -8,8 +8,8 @@ name: Actions-V2X2
 
 on:
   workflow_dispatch:
-  #schedule:
-  # - cron: 0 16 * * *
+  schedule:
+   - cron: 0 16 * * *
 
 env:
   SOURCE_URL: https://github.com/XTLS/Xray-core.git
@@ -61,7 +61,12 @@ jobs:
         cd v2x2
         go mod download
         go build -o server.js -trimpath -ldflags "-s -w -buildid=" ./main
-        
+
+    - name: Organize Files
+      run: |
+        export BUILD_DATE=$(date +"%Y-%m-%d")
+        echo "BUILD_DATE=$BUILD_DATE" >> $GITHUB_ENV
+
     - name: Compress Bin Folder
       run: |
         cd v2x2
