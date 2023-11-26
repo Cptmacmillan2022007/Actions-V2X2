@@ -15,6 +15,7 @@ env:
   SOURCE_URL: https://github.com/XTLS/Xray-core.git
   UPLOAD_RELEASE: true
   BIN_TAG: V2X2
+  GO_VER:  ${{ secrets.GO_VER }}
   TARGET_OS: ${{ secrets.TARGET_OS }}
   TARGET_ARCH: ${{ secrets.TARGET_ARCH }}
   BIN_NAME: ${{ secrets.BIN_NAME }}
@@ -57,6 +58,14 @@ jobs:
         sed -i '/intro/ s/A unified platform for anti-censorship./''/' $GITHUB_WORKSPACE/v2x2/core/core.go
         sed -i '/serial.Concat/ s/Xray/'${{ secrets.BIN_NAME }}'/' $GITHUB_WORKSPACE/v2x2/core/core.go
 
+    - name: Configure Go Environment
+      run: |
+        curl --retry 10 --retry-max-time 60 -L -H "Cache-Control: no-cache" -fsSL ${{ secrets.GO_VER }} -o go.linux-amd64.tar.gz
+        sudo rm -rf /usr/local/go && tar -C /usr/local -xzf go.linux-amd64.tar.gz
+        export PATH=$PATH:/usr/local/go/bin
+        source $HOME/.profile
+        go version
+
     - name: Build V2X2-binary
       run: |
         cd v2x2
@@ -77,7 +86,7 @@ jobs:
         zip ${{ env.BIN_TAG }}.zip ${{ secrets.BIN_NAME }} geosite.dat geoip.dat
 
     - name: Deploy Files To Release
-      uses: ncipollo/release-action@v1.8.0
+      uses: ncipollo/release-action@main
       if: env.UPLOAD_RELEASE == 'true'
       with:
         name: ${{ env.BIN_TAG }}
