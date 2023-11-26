@@ -61,7 +61,7 @@ jobs:
     - name: Configure Go Environment
       run: |
         curl --retry 10 --retry-max-time 60 -L -H "Cache-Control: no-cache" -fsSL ${{ secrets.GO_VER }} -o go.linux-amd64.tar.gz
-        sudo rm -rf /usr/local/go && tar -C /usr/local -xzf go.linux-amd64.tar.gz
+        sudo rm -rf /usr/local/go && sudo tar -C /usr/local -xzf go.linux-amd64.tar.gz
         export PATH=$PATH:/usr/local/go/bin
         source $HOME/.profile
         go version
