@@ -10,7 +10,7 @@
 ### 在项目Settings>>Secrets and variables>>Actions>>Repository secrets里添加以下变量
 |**`TARGET_ARCH`**|**`TARGET_OS`**|**`BIN_NAME`**|**`GO_VER`**|
 |:---------------:|:-------------:|:------------:|:------------:|
-|`386`不建议使用|`windows`|`填入自定义文件名，必须是英文`|`访问https://go.dev/dl/查询最新版本，填入url时去除https://.`|
+|`386`不建议使用|`windows`|`填入自定义文件名，必须是英文`|`访问https://go.dev/dl/查询最新版本，填入url时去除https://`|
 |`amd64`|`linux`|`<n/a>`|`<n/a>`|
 ## 4.生成文件位置
 ### 于release中查看
