@@ -15,7 +15,6 @@ env:
   SOURCE_URL: https://github.com/XTLS/Xray-core.git
   UPLOAD_RELEASE: true
   BIN_TAG: V2X2
-  GO_VER:  ${{ secrets.GO_VER }}
   TARGET_OS: ${{ secrets.TARGET_OS }}
   TARGET_ARCH: ${{ secrets.TARGET_ARCH }}
   BIN_NAME: ${{ secrets.BIN_NAME }}
@@ -60,12 +59,12 @@ jobs:
         sed -i '/serial.Concat/ s/Xray/'${{ secrets.BIN_NAME }}'/' $GITHUB_WORKSPACE/v2x2/core/core.go
 
     - name: Configure Go Environment
-      run: |
-        curl --retry 10 --retry-max-time 60 -L -H "Cache-Control: no-cache" -fsSL ${{ secrets.GO_VER }} -o go.linux-amd64.tar.gz
-        sudo rm -rf /usr/local/go && sudo tar -C /usr/local -xzf go.linux-amd64.tar.gz
-        export PATH=$PATH:/usr/local/go/bin
-        source $HOME/.profile
-        go version
+      uses: actions/setup-go@main
+      with:
+        go-version: '1.23'
+        check-latest: true
+        run: |
+          go version
 
     - name: Build V2X2-binary
       run: |
