@@ -25,7 +25,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions: write-all
     env:
-      CGO_ENABLED: 0
       GOOS: ${{ secrets.TARGET_OS }}
       GOARCH: ${{ secrets.TARGET_ARCH }}
 
@@ -37,6 +36,7 @@ jobs:
       run: |
         sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc
         sudo -E apt-get -qq update
+        sudo -E apt-get -qq full-upgrade
         sudo -E apt-get -qq install curl zip unzip
         sudo -E apt-get -qq autoremove --purge
         sudo -E apt-get -qq clean
@@ -58,19 +58,11 @@ jobs:
         sed -i '/intro/ s/A unified platform for anti-censorship./''/' $GITHUB_WORKSPACE/v2x2/core/core.go
         sed -i '/serial.Concat/ s/Xray/'${{ secrets.BIN_NAME }}'/' $GITHUB_WORKSPACE/v2x2/core/core.go
 
-    - name: Configure Go Environment
-      uses: actions/setup-go@main
-      with:
-        go-version: '1.23'
-        check-latest: true
-        run: |
-          go version
-
     - name: Build V2X2-binary
       run: |
-        cd v2x2
+        cd $GITHUB_WORKSPACE/v2x2
         go mod download
-        go build -o ${{ secrets.BIN_NAME }} -trimpath -ldflags "-s -w -buildid=" ./main
+        CGO_ENABLED=0  go build -o ${{ secrets.BIN_NAME }} -trimpath -ldflags "-s -w -buildid=" ./main
 
     - name: Organize Files
       run: |
@@ -82,7 +74,7 @@ jobs:
 
     - name: Compress Bin Folder
       run: |
-        cd v2x2
+        cd $GITHUB_WORKSPACE/v2x2
         zip ${{ env.BIN_TAG }}.zip ${{ secrets.BIN_NAME }} geosite.dat geoip.dat
 
     - name: Deploy Files To Release
