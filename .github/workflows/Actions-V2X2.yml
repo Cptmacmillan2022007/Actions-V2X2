@@ -61,6 +61,7 @@ jobs:
     - name: Build V2X2-binary
       run: |
         cd $GITHUB_WORKSPACE/v2x2
+        go clean -modcache
         go mod download
         CGO_ENABLED=0  go build -o ${{ secrets.BIN_NAME }} -trimpath -ldflags "-s -w -buildid=" ./main
 
