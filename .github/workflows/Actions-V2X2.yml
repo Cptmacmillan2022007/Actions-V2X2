@@ -24,6 +24,7 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions: write-all
     env:
       CGO_ENABLED: 0
       GOOS: ${{ secrets.TARGET_OS }}
