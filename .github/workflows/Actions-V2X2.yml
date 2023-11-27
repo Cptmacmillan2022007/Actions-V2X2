@@ -61,7 +61,6 @@ jobs:
 
     - name: Build V2X2-binary
       run: |
-        go version
         cd $GITHUB_WORKSPACE/v2x2
         go clean -modcache
         go mod download
