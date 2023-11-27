@@ -23,7 +23,7 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
-    permissions: read-all write-all
+    permissions: write-all
     env:
       GOOS: ${{ secrets.TARGET_OS }}
       GOARCH: ${{ secrets.TARGET_ARCH }}
