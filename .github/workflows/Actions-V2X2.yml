@@ -21,7 +21,7 @@ env:
   
 
 jobs:
-  build:
+  Build:
     runs-on: ubuntu-latest
     permissions: write-all
     env:
@@ -90,3 +90,15 @@ jobs:
         body: ${{ env.BUILD_DATE }}
         token: ${{ secrets.GITHUB_TOKEN }}
         artifacts: v2x2/${{ env.BIN_TAG }}.zip
+
+  Delete-Workflow-Run:
+    if: ${{ always() }}
+    needs: [Build]
+    runs-on: ubuntu-latest
+    permissions: write-all
+
+    steps:
+      - name: Delete workflow runs
+        uses: Mattraks/delete-workflow-runs@main
+        with:
+          retain_days: 7
